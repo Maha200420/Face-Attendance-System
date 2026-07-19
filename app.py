@@ -20,10 +20,6 @@ datetoday = date.today().strftime("%m_%d_%y")
 datetoday2 = date.today().strftime("%d-%B-%Y")
 
 face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-try:
-    cap = cv2.VideoCapture(1)
-except:
-    cap = cv2.VideoCapture(0)
 
 if not os.path.isdir('Attendance'):
     os.makedirs('Attendance')
@@ -131,91 +127,111 @@ def index():
     return render_template('index.html', names=names, rolls=rolls, times=times, l=l, totalreg=totalreg(),
                            datetoday2=datetoday2, mess='Default message')
 
+import base64
+
+def decode_base64_image(base64_str):
+    if ',' in base64_str:
+        base64_str = base64_str.split(',')[1]
+    img_data = base64.b64decode(base64_str)
+    nparr = np.frombuffer(img_data, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    return img
+
 @app.route('/start', methods=['GET'])
 def start():
-    ATTENDANCE_MARKED = False
     if 'face_recognition_model.pkl' not in os.listdir('static'):
         names, rolls, times, l = extract_attendance()
         MESSAGE = 'This face is not registered with us, kindly register yourself first'
-        print("Face not in the database, need to register")
-        return render_template('index.html', names=names, rolls=rolls, times=times, l=l, totalreg=totalreg,
+        return render_template('index.html', names=names, rolls=rolls, times=times, l=l, totalreg=totalreg(),
                                datetoday2=datetoday2, mess=MESSAGE)
-
-    cap = cv2.VideoCapture(0)
-    ret = True
-    while True:
-        ret, frame = cap.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
-
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            face = cv2.resize(frame[y:y+h, x:x+w], (50, 50))
-            identified_person = identify_face(face.reshape(1, -1))[0]
-            cv2.putText(frame, f'{identified_person}', (x + 6, y - 6), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 20), 2)
-            print(identified_person)
-            if cv2.waitKey(1) == ord('a'):
-                add_attendance(identified_person)
-                current_time_ = datetime.now().strftime("%H:%M:%S")
-                print(f"Attendance marked for {identified_person}, at {current_time_}")
-                ATTENDANCE_MARKED = True
-                break
-
-        if ATTENDANCE_MARKED:
-            break
-
-        cv2.imshow('Attendance Check, press "q" to exit', frame)
-        cv2.putText(frame, 'hello', (30, 30), cv2.FONT_HERSHEY_COMPLEX, 2, (255, 255, 255))
-
-        if cv2.waitKey(1) == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
+    
     names, rolls, times, l = extract_attendance()
-    MESSAGE = 'Attendance taken successfully' if ATTENDANCE_MARKED else 'Attendance not marked'
-    print("Attendance registered" if ATTENDANCE_MARKED else "Attendance not marked")
     return render_template('index.html', names=names, rolls=rolls, times=times, l=l, totalreg=totalreg(),
-                           datetoday2=datetoday2, mess=MESSAGE)
+                           datetoday2=datetoday2, start_camera=True)
 
-
-@app.route('/add',methods=['GET','POST'])
+@app.route('/add', methods=['POST'])
 def add():
     newusername = request.form['newusername']
     newuserid = request.form['newuserid']
     userimagefolder = 'static/faces/'+newusername+'_'+str(newuserid)
     if not os.path.isdir(userimagefolder):
         os.makedirs(userimagefolder)
-    cap = cv2.VideoCapture(0)
-    i,j = 0,0
-    while 1:
-        _,frame = cap.read()
-        faces = extract_faces(frame)
-        for (x,y,w,h) in faces:
-            cv2.rectangle(frame,(x, y), (x+w, y+h), (255, 0, 20), 2)
-            cv2.putText(frame,f'Images Captured: {i}/50',(30,30),cv2.FONT_HERSHEY_SIMPLEX,1,(255, 0, 20),2,cv2.LINE_AA)
-            if j%10==0:
-                name = newusername+'_'+str(i)+'.jpg'
-                cv2.imwrite(userimagefolder+'/'+name,frame[y:y+h,x:x+w])
-                i+=1
-            j+=1
-        if j==500:
-            break
-        cv2.imshow('Adding new User',frame)
-        if cv2.waitKey(1)==27:
-            break
-    cap.release()
-    cv2.destroyAllWindows()
-    print('Training Model')
-    train_model()
-    names,rolls,times,l = extract_attendance()
-    if totalreg() > 0 :
-        names, rolls, times, l = extract_attendance()
-        MESSAGE = 'User added Sucessfully'
-        print("message changed")
-        return render_template('index.html',names=names,rolls=rolls,times=times,l=l,totalreg=totalreg(),datetoday2=datetoday2, mess = MESSAGE)
-    else:
-        return redirect(url_for('index.html',names=names,rolls=rolls,times=times,l=l,totalreg=totalreg(),datetoday2=datetoday2))
+        
+    names, rolls, times, l = extract_attendance()
+    return render_template('index.html', names=names, rolls=rolls, times=times, l=l, totalreg=totalreg(),
+                           datetoday2=datetoday2, register_camera=True, newusername=newusername, newuserid=newuserid)
+
+@app.route('/api/verify_frame', methods=['POST'])
+def api_verify_frame():
+    try:
+        data = request.get_json()
+        image_data = data.get('image')
+        img = decode_base64_image(image_data)
+        if img is None:
+            return {'status': 'error', 'message': 'Invalid image data'}
+            
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+        
+        if len(faces) == 0:
+            return {'status': 'no_face'}
+            
+        # Take the largest face found
+        (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
+        face = cv2.resize(img[y:y+h, x:x+w], (50, 50))
+        
+        if 'face_recognition_model.pkl' not in os.listdir('static'):
+            return {'status': 'no_model'}
+            
+        identified_person = identify_face(face.reshape(1, -1))[0]
+        add_attendance(identified_person)
+        
+        username = identified_person.split('_')[0]
+        userid = identified_person.split('_')[1]
+        return {
+            'status': 'success', 
+            'identified_person': identified_person,
+            'username': username,
+            'userid': userid,
+            'time': datetime.now().strftime("%H:%M:%S")
+        }
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+@app.route('/api/register_frame', methods=['POST'])
+def api_register_frame():
+    try:
+        data = request.get_json()
+        image_data = data.get('image')
+        newusername = data.get('newusername')
+        newuserid = data.get('newuserid')
+        frame_index = int(data.get('frame_index'))
+        
+        img = decode_base64_image(image_data)
+        if img is None:
+            return {'status': 'error', 'message': 'Invalid image data'}
+            
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detectMultiScale(gray, 1.3, 5)
+        
+        if len(faces) == 0:
+            return {'status': 'no_face'}
+            
+        (x, y, w, h) = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)[0]
+        userimagefolder = 'static/faces/' + newusername + '_' + str(newuserid)
+        if not os.path.isdir(userimagefolder):
+            os.makedirs(userimagefolder)
+            
+        name = f"{newusername}_{frame_index}.jpg"
+        cv2.imwrite(os.path.join(userimagefolder, name), img[y:y+h, x:x+w])
+        
+        if frame_index == 49:
+            print('Training Model on 50th frame')
+            train_model()
+            
+        return {'status': 'success', 'frame_index': frame_index}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
     
 
 

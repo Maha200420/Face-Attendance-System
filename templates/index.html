@@ -352,6 +352,207 @@
       font-weight: 700;
     }
   </style>
+
+  {% if start_camera or register_camera %}
+  <!-- Show camera overlay / modal -->
+  <div id="cameraModal" class="modal fade show" tabindex="-1" style="display: block; background: rgba(0,0,0,0.85); z-index: 1050;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+        <div class="modal-header bg-dark text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+          <h5 class="modal-title m-0">
+            {% if start_camera %}
+              <i class="fas fa-camera me-2 text-success"></i>Taking Attendance...
+            {% else %}
+              <i class="fas fa-user-plus me-2 text-primary"></i>Registering Face...
+            {% endif %}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" onclick="closeCameraModal()"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <div class="position-relative border border-2 border-primary rounded-3 shadow-sm mx-auto" style="max-width: 400px; height: 300px; overflow: hidden; background: #111;">
+            <video id="video" width="100%" height="100%" autoplay playsinline style="transform: scaleX(-1); object-fit: cover;"></video>
+            <canvas id="canvas" class="d-none" width="400" height="300"></canvas>
+            <div id="statusOverlay" class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white p-2 text-center" style="font-size: 14px;">
+              Initializing Camera...
+            </div>
+          </div>
+          
+          {% if register_camera %}
+          <div class="progress mt-3" style="height: 20px; border-radius: 10px;">
+            <div id="registerProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+          </div>
+          <div class="mt-2 text-muted" style="font-size: 13px;">
+            Registering: <strong>{{ newusername }}</strong> (ID: {{ newuserid }})
+          </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer justify-content-between bg-light" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
+          <span id="cameraMessage" class="text-danger fw-bold" style="font-size: 14px;"></span>
+          <button type="button" class="btn btn-secondary px-4" onclick="closeCameraModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const statusOverlay = document.getElementById('statusOverlay');
+    const cameraMessage = document.getElementById('cameraMessage');
+    const registerProgress = document.getElementById('registerProgress');
+
+    let stream = null;
+    let active = true;
+
+    // Open webcam
+    navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } })
+      .then(s => {
+        stream = s;
+        video.srcObject = stream;
+        statusOverlay.innerText = "Camera Active. Scanning...";
+        
+        // Start processing loops
+        if ("{{ start_camera }}" === "True") {
+          verifyLoop();
+        } else if ("{{ register_camera }}" === "True") {
+          registerLoop(0);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        statusOverlay.innerText = "Error: Camera access denied or not found.";
+        cameraMessage.innerText = "Please enable camera access.";
+      });
+
+    function closeCameraModal() {
+      active = false;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      window.location.href = '/index';
+    }
+
+    // Attendance Verification Loop
+    function verifyLoop() {
+      if (!active) return;
+      
+      const context = canvas.getContext('2d');
+      // Mirror the canvas capture to match mirrored video display
+      context.save();
+      context.translate(canvas.width, 0);
+      context.scale(-1, 1);
+      context.drawImage(video, 0, 0, 400, 300);
+      context.restore();
+      
+      const dataURL = canvas.toDataURL('image/jpeg');
+      
+      fetch('/api/verify_frame', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataURL })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!active) return;
+        
+        if (data.status === 'success') {
+          statusOverlay.innerHTML = `<span class='text-success fw-bold'><i class='fas fa-check-circle me-1'></i>Attendance marked for ${data.username}!</span>`;
+          cameraMessage.className = "text-success fw-bold";
+          cameraMessage.innerText = `Success: ${data.username} marked.`;
+          
+          setTimeout(() => {
+            closeCameraModal();
+          }, 2000);
+        } else if (data.status === 'no_face') {
+          statusOverlay.innerText = "No face detected. Please position yourself.";
+          setTimeout(verifyLoop, 250); 
+        } else if (data.status === 'no_model') {
+          statusOverlay.innerText = "No trained model found. Register faces first.";
+          cameraMessage.innerText = "Model pkl not found.";
+        } else {
+          statusOverlay.innerText = "Scanning...";
+          setTimeout(verifyLoop, 250);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        if (active) setTimeout(verifyLoop, 1000);
+      });
+    }
+
+    // User Registration Loop (captures 50 frames)
+    function registerLoop(frameIndex) {
+      if (!active) return;
+      if (frameIndex >= 50) {
+        statusOverlay.innerHTML = "<span class='text-success fw-bold'><i class='fas fa-check-circle me-1'></i>Training completed successfully!</span>";
+        if (registerProgress) {
+          registerProgress.style.width = "100%";
+          registerProgress.innerText = "100%";
+        }
+        setTimeout(() => {
+          closeCameraModal();
+        }, 2000);
+        return;
+      }
+      
+      const context = canvas.getContext('2d');
+      // Mirror the canvas capture to match mirrored video display
+      context.save();
+      context.translate(canvas.width, 0);
+      context.scale(-1, 1);
+      context.drawImage(video, 0, 0, 400, 300);
+      context.restore();
+      
+      const dataURL = canvas.toDataURL('image/jpeg');
+      
+      statusOverlay.innerText = `Capturing face crop ${frameIndex + 1}/50...`;
+      
+      const pct = Math.round((frameIndex / 50) * 100);
+      if (registerProgress) {
+        registerProgress.style.width = pct + "%";
+        registerProgress.innerText = pct + "%";
+      }
+      
+      fetch('/api/register_frame', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image: dataURL,
+          newusername: "{{ newusername }}",
+          newuserid: "{{ newuserid }}",
+          frame_index: frameIndex
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!active) return;
+        
+        if (data.status === 'success') {
+          setTimeout(() => {
+            registerLoop(frameIndex + 1);
+          }, 80);
+        } else if (data.status === 'no_face') {
+          statusOverlay.innerText = "No face detected. Keep face in view.";
+          setTimeout(() => {
+            registerLoop(frameIndex);
+          }, 200);
+        } else {
+          setTimeout(() => {
+            registerLoop(frameIndex);
+          }, 400);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        if (active) {
+          setTimeout(() => {
+            registerLoop(frameIndex);
+          }, 1000);
+        }
+      });
+    }
+  </script>
+  {% endif %}
 </body>
 
 </html>
