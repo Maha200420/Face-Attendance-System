@@ -1,6 +1,8 @@
 # Face Recognition Attendance System
 
-A Python-based desktop application for student attendance using face recognition (dlib, OpenCV, and Flask).
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Maha200420/Face-Attendance-System)
+
+A Python-based application for student attendance using face recognition (dlib, OpenCV, and Flask).
 
 ## Features
 - Real-time face detection and alignment.
