@@ -1,6 +1,18 @@
 import sqlite3
 import cv2
 import os
+import sys
+
+print("Python version:", sys.version)
+print("cv2 module path:", getattr(cv2, "__file__", "No __file__"))
+try:
+    print("Testing cv2 native load...")
+    cc = cv2.CascadeClassifier
+    print("cv2.CascadeClassifier is available!")
+except Exception as e:
+    print("cv2 load failed with exception:", str(e))
+    import traceback
+    traceback.print_exc()
 from flask import Flask,request,render_template,redirect,session,url_for
 from datetime import date
 from datetime import datetime
