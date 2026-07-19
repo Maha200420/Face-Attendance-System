@@ -1,0 +1,31 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+.ipynb_checkpoints
+
+# Ignore duplicate directories/files created with " - Copy" or "- Copy" suffix
+* - Copy/
+* - Copy
+*- Copy/
+*- Copy
+
+# Large files and packages
+*.mp4
+*.whl
+
+# Local database
+*.db
+*.sqlite3
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Landmark models
+landmarks.dat
+*.dat

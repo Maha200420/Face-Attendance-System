@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Face detection - detection Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="../static/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/../static/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../static/lib/flaticon/font/flaticon.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="../static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="../static/lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="../static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm py-3 py-lg-0 px-3 px-lg-0">
+        <a href="index.html" class="navbar-brand ms-lg-5">
+            <h1 class="display-5 m-0 text-primary">Face<span class="text-secondary">Recognition</span></h1>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="/index" class="nav-item nav-link">Home</a>
+                <a href="/notebook" class="nav-item nav-link">NoteBook</a>
+                <a href="/" class="nav-item nav-link">SignOut</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+
+    <!-- Carousel Start -->
+    <div class="container-fluid p-0 mb-5">
+        <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="w-100" src="../static/img/face-1.jpg" alt="Image"
+                        style="height:300px; object-fit:cover;">
+                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div class="p-3" style="max-width: 900px;">
+                            
+                             <h1 class="display-1 text-white mb-md-4 animated zoomIn">>Face Attendance System Outcome</h1>
+                            </h1>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Carousel End -->
+
+    <section class="welcome_section layout_padding prediction-section">
+
+        <div class="container">
+
+
+            <div class="prediction-card">
+
+                <div class="card-header-custom">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Prediction Results
+                </div>
+
+                <div class="table-responsive p-4">
+
+                    <table class="table prediction-table">
+
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-database me-2"></i>
+                                    Test Data
+                                </th>
+                                <th>
+                                    <i class="fas fa-user-check me-2"></i>
+                                    Predicted Label
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td>{{ result['Test Data'] }}</td>
+                                <td>
+                                    <span class="prediction-badge">
+                                        {{ result['Predicted Label'] }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Footer Start -->
+
+    <div class="container-fluid bg-primary text-light py-4">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-md-0">&copy;
+                        <a class="text-white border-bottom" href="#">FaceRecognition</a>.
+                        All Rights Reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0">Designed by <a class="text-white border-bottom" href="#">Attendance System</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-secondary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/lib/wow/wow.min.js"></script>
+    <script src="../static/lib/easing/easing.min.js"></script>
+    <script src="../static/lib/waypoints/waypoints.min.js"></script>
+    <script src="../static/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../static/js/main.js"></script>
+    <style>
+        .prediction-section {
+            background: #f5f7fb;
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 40px;
+            font-weight: 700;
+            color: #0d6efd;
+            margin-bottom: 20px;
+        }
+
+        .prediction-card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #0d6efd, #198754);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .prediction-table {
+            margin-bottom: 0;
+        }
+
+        .prediction-table thead {
+            background: #e9f2ff;
+        }
+
+        .prediction-table th {
+            text-align: center;
+            font-size: 18px;
+            padding: 15px;
+            color: #0d6efd;
+        }
+
+        .prediction-table td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .prediction-table tbody tr {
+            transition: all .3s ease;
+        }
+
+        .prediction-table tbody tr:hover {
+            background: #f8fbff;
+            transform: scale(1.01);
+        }
+
+        .prediction-badge {
+            background: linear-gradient(135deg, #198754, #20c997);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .custom_heading-container {
+            margin-bottom: 30px;
+        }
+
+        .custom_heading-container h2 {
+            font-weight: 700;
+            color: #212529;
+        }
+    </style>
+</body>
+
+</html>

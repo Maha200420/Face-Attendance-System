@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Face detection - detection Website Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="../static/img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/../static/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../static/lib/flaticon/font/flaticon.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="../static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="../static/lib/animate/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="../static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm py-3 py-lg-0 px-3 px-lg-0">
+        <a href="index.html" class="navbar-brand ms-lg-5">
+            <h1 class="display-5 m-0 text-primary">Face<span class="text-secondary">Recognition</span></h1>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="/" class="nav-item nav-link">Home</a>
+                <a href="/login" class="nav-item nav-link">Login Here</a>
+                <a href="/logon" class="nav-item nav-link active">Register Here</a>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <style>
+        .carousel-item {
+            height: 100vh;
+        }
+
+        .carousel-item img {
+            height: 150vh;
+            object-fit: cover;
+        }
+
+        .carousel-caption {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.521);
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .register-card h2 {
+            font-weight: 700;
+            color: #2a37ec;
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 10px rgba(25, 135, 84, .25);
+            border-color: #2c48e9;
+        }
+
+        .input-group-text {
+            background: #384aee;
+            color: white;
+            border: none;
+            border-radius: 10px 0 0 10px;
+            width: 50px;
+            justify-content: center;
+        }
+
+        .btn-register {
+            height: 52px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 45, 135, 0.4);
+        }
+
+        .extra-links a {
+            text-decoration: none;
+            color: #2751db;
+            font-weight: 600;
+        }
+
+        .extra-links a:hover {
+            color: #2a3cda;
+        }
+
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .carousel-item img {
+            height: 100vh;
+            object-fit: cover;
+        }
+    </style>
+
+    <div class="container-fluid p-0">
+        <div id="header-carousel" class="carousel slide">
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+
+                    <img class="w-100" src="../static/img/face-1.jpg" alt="Background">
+
+                    <div class="carousel-caption d-flex justify-content-center align-items-center">
+
+                        <div class="register-card">
+
+                            <h2 class="text-center mb-2">
+                                Face Recognition Attendance System
+                            </h2>
+
+                            <p class="text-center text-muted mb-4">
+                                Create Your Account
+                            </p>
+
+                            <form action="/signup" method="POST">
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <input type="text" class="form-control" name="name" placeholder="Full Name"
+                                                required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-id-badge"></i>
+                                            </span>
+                                            <input type="text" class="form-control" name="user" placeholder="Username"
+                                                required>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-envelope"></i>
+                                            </span>
+                                            <input type="email" class="form-control" name="email"
+                                                placeholder="Email Address" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-phone"></i>
+                                            </span>
+                                            <input type="tel" class="form-control" name="mobile"
+                                                placeholder="Mobile Number" required>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-12 mb-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-lock"></i>
+                                            </span>
+                                            <input type="password" class="form-control" name="password"
+                                                placeholder="Password" required>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-register w-100" style="background-color: #2a3cda;">
+                                    <i class="fas fa-user-plus me-2"></i>
+                                    Register Account
+                                </button>
+
+                                <hr>
+
+                                <div class="text-center extra-links">
+                                    <span class="text-muted">
+                                        Already have an account?
+                                    </span>
+                                    <a href="/login">
+                                        <i class="fas fa-sign-in-alt"></i> Login Here
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+
+    <div class="container-fluid bg-primary text-light py-4">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-md-0">&copy;
+                        <a class="text-white border-bottom" href="#">FaceRecognition</a>.
+                        All Rights Reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0">Designed by <a class="text-white border-bottom"
+                            href="#">Attendance System</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-secondary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/lib/wow/wow.min.js"></script>
+    <script src="../static/lib/easing/easing.min.js"></script>
+    <script src="../static/lib/waypoints/waypoints.min.js"></script>
+    <script src="../static/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../static/js/main.js"></script>
+</body>
+
+</html>
